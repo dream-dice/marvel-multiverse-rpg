@@ -4,7 +4,7 @@ import discord
 
 from dotenv import load_dotenv
 
-import robot
+from run_command import run_command
 
 load_dotenv()
 
@@ -24,10 +24,9 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    username = message.author.name
-    if message.content.startswith('!cap d616'):
-        robot.d616(username)
-        await message.channel.send(robot.display(username))
+    response = run_command(message.author.name, message.content)
+    if response:
+        await message.channel.send(response)
 
 token = os.environ['TOKEN']
 client.run(token)
