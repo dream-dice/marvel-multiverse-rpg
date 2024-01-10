@@ -24,7 +24,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    username = message.author
+    username = message.author.name
     if message.content.startswith('!cap d616'):
         robot.d616(username)
         await message.channel.send(robot.display(username))
