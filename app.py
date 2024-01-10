@@ -37,10 +37,10 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='$', intents=intents)
 
 @bot.command()
-async def test(ctx):
+async def thing(ctx):
     pass
 
-bot.add_command(test)
+bot.add_command(thing)
 
 token = os.environ['TOKEN']
 client.run(token)
