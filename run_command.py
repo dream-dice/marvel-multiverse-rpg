@@ -33,7 +33,7 @@ commands = {
 }
 
 def default_fn(username, command):
-    return "Captain Dice here, sorry @{} I do not know what you what `{}` is. Run `!cap help` for me to come to the rescue.".format(username, command)
+    return "Captain Dice here, sorry @{} I do not know what `{}` is. Run `!cap help` for me to come to the rescue.".format(username, command)
 
 def run_command(username, content):
     if not content.startswith('!cap'):
