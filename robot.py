@@ -26,26 +26,12 @@ def d616(username):
 def reroll(username, die, edge):
     users = load()
     user = users[username] or d616(username)[username]
-    value = randint(1, 6)
     current = user[die]
-    if edge and die == 'dm' and current == 1:
-        user[die] = current
-    elif edge and die == 'dm' and (value > current or value == 1):
-        user[die] = value
-    elif edge and die == 'd1' and (value > current):
-        user[die] = value
-    elif edge and die == 'd2' and (value > current):
-        user[die] = value
-    elif not edge and die == 'dm' and current == 1:
-        user[die] = value
-    elif not edge and die == 'dm' and (value < current or value == 1):
-        user[die] = current
-    elif not edge and die == 'd1' and (value < current):
-        user[die] = value
-    elif not edge and die == 'd2' and (value < current):
-        user[die] = value
+
+    value = randint(1, 6)
+
     save(users)
-    return users
+    return value
 
 
 def set(username, value):
