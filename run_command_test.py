@@ -14,6 +14,10 @@ test("!cap     thing")
 
 print("=== d616 ===")
 test("!cap d616")
-test("!cap d        ")
+test("!cap     d        ")
 test("!cap d     1    ")
 test("!cap d     boop    ")
+
+print("=== view ===")
+test("!cap view")
+test("!cap    v   ")
