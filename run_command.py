@@ -18,7 +18,7 @@ Examples:
 `!cap d616 1` for normal roll with 1 karma
 `!cap d 1` for normal roll with 1 karma, but using the shortcut
 
-!cap reroll| d1|d2|dm edge|e|trouble|t
+!cap reroll|r d1|d2|dm edge|e|trouble|t
 !cap view|v
 !cap init|i start|s
 !cap init|i join|j <username|user:string>
@@ -28,8 +28,23 @@ Examples:
 !cap init|i end|e
     """
 
+def d616(username, command):
+    robot.d616(username)
+
+    command_params = re.split("\W", command)
+    command_params = [param for param in command_params if param]
+    if len(command_params) > 1:
+        try:
+            karma = int(command_params[1])
+            return robot.display(username, karma)
+        except:
+            pass
+
+    return robot.display(username)
+
 commands = {
-    "help": help
+    "h": help,
+    "d": d616
 }
 
 def default_fn(username, command):
@@ -40,5 +55,5 @@ def run_command(username, content):
         return
     command = re.match("!cap(.*)", content).groups()[0].strip()
 
-    fn = commands.get(command) or default_fn
+    fn = commands.get(command[0]) or default_fn
     return fn(username, command)
