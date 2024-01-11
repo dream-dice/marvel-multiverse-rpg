@@ -36,6 +36,14 @@ def reroll(username, die, edge):
         user[die] = value
     elif edge and die == 'd2' and (value > current):
         user[die] = value
+    elif not edge and die == 'dm' and current == 1:
+        user[die] = value
+    elif not edge and die == 'dm' and (value < current or value == 1):
+        user[die] = current
+    elif not edge and die == 'd1' and (value < current):
+        user[die] = value
+    elif not edge and die == 'd2' and (value < current):
+        user[die] = value
     save(users)
     return users
 
@@ -47,6 +55,16 @@ def set(username, value):
     save(users)
     return users
 
+
+dice_emojis = {
+    1: "⚀",
+    2: "⚁",
+    3: "⚂",
+    4: "⚃",
+    5: "⚃",
+    6: "⚅",
+    "m": "🇲"
+}
 
 def display(username, karma=0):
     users = load()
@@ -70,11 +88,14 @@ def display(username, karma=0):
     if sum > 19:
         sum = 19
 
-    return "{}: D1 ({}), D2 ({}), DM ({}){} = {} {}".format(
+    return "{}: D1 ({}) {}, D2 ({}) {}, DM ({}) {}{} = {} {}".format(
         username,
         user["d1"],
+        dice_emojis[user["d1"]],
         user["d2"],
+        dice_emojis[user["d2"]],
         fantastic_roll,
+        dice_emojis["m" if user["dm"] == 1 else user["dm"]],
         karma_value,
         sum,
         fantastic

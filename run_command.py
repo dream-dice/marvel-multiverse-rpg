@@ -21,7 +21,13 @@ Examples:
 If you want to see your current dice
 `!cap view|v`
 
-!cap reroll|r d1|d2|dm edge|e|trouble|t
+If you want to reroll a dice
+`!cap reroll|r d1|d2|dm trouble|t`
+
+Examples
+`!cap reroll d1` to reroll your d1
+`!cap reroll d2 trouble` to reroll your d1 with trouble
+`!cap r dm t` to reroll your dm with trouble
 
 !cap init|i start|s
 !cap init|i join|j <username|user:string>
@@ -34,8 +40,7 @@ If you want to see your current dice
 def d616(username, command):
     robot.d616(username)
 
-    command_params = re.split("\W", command)
-    command_params = [param for param in command_params if param]
+    command_params = split_command(command)
     if len(command_params) > 1:
         try:
             karma = int(command_params[1])
@@ -48,10 +53,29 @@ def d616(username, command):
 def view(username, command):
     return robot.display(username)
 
+def reroll(username, command):
+    command_params = split_command(command)
+    if len(command_params) <= 1:
+        return "Captain Dice here, you need to at least specify a d1, d2, dm and you said '{}'. Captain Dice to the rescue `!cap help`!.".format(command)
+
+    die = command_params[1].lower()
+
+    valid_die = die in ["d1", "d2", "dm"]
+    if not valid_die:
+        return "Captain Dice here, '{}' is not a dice I know. Captain Dice to the rescue `!cap help`!.".format(command_params[1])
+
+    robot.reroll(username, die, len(command_params) == 2)
+    return robot.display(username)
+
+def split_command(command):
+    command_params = re.split("\W", command)
+    return [param for param in command_params if param]
+
 commands = {
     "h": help,
     "d": d616,
-    "v": view
+    "v": view,
+    "r": reroll
 }
 
 def default_fn(username, command):
