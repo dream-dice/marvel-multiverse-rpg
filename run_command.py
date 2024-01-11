@@ -65,7 +65,7 @@ def reroll(username, command):
         return "Captain Dice here, '{}' is not a dice I know. Captain Dice to the rescue `!cap help`!.".format(command_params[1])
 
     new_value = robot.reroll(username, die, len(command_params) == 2)
-    return "rolled: {}, {}".format(new_value, robot.display(username))
+    return "You rolled {} ({})\n{}".format(die.upper(), new_value, robot.display(username))
 
 def split_command(command):
     command_params = re.split("\W", command)

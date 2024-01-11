@@ -65,7 +65,7 @@ def display(username, karma=0):
     fantastic_roll = user["dm"]
     if user["dm"] == 1:
         fantastic_roll = 'M'
-        fantastic = 'Fantastic!'
+        fantastic = ' Fantastic!'
 
     karma_value = ''
     if karma > 0:
@@ -74,7 +74,7 @@ def display(username, karma=0):
     if sum > 19:
         sum = 19
 
-    return "{}: D1 ({}) {}, D2 ({}) {}, DM ({}) {}{} = {} {}".format(
+    return "@{} has the current dice `D1 ({}) {}, D2 ({}) {}, DM ({}) {}{} = {}{}`".format(
         username,
         user["d1"],
         dice_emojis[user["d1"]],
