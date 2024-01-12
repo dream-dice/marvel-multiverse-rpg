@@ -9,18 +9,60 @@ VALID_D6_VALUES = [1, 2, 3, 4, 5, 6]
 VALID_DM_VALUES = VALID_D6_VALUES + ["m", "M"]
 DICE = ["d1", "d2", "dm"]
 
-def friendly_response(cap: captain_dice.CaptainDice, hero, command, params):
-    return cap.heros[hero]
+
+def friendly_reply(cap: captain_dice.CaptainDice, hero, command, params):
+    pool = cap.heros[hero]
+    d1 = pool["d1"]
+    d2 = pool["d2"]
+    dm = pool["dm"]
+
+    fantastic = dm == 1
+    friendly_dm = "M" if fantastic else dm
+    fantastic_message = " Fantastic!" if fantastic else ""
+    dm_value = 6 if fantastic else dm
+
+    ability = params.get("a") or 0
+    ability_message = ", Ability: {}".format(ability) if ability != 0 else ""
+
+    total = d1 + d2 + dm_value + ability
+
+    vs_target = params.get("v") or 0
+    target_message = ""
+    if vs_target == 0:
+        target_message = ""
+    elif d1 == 6 and d2 == 6 and dm_value == 6:
+        target_message = "\nYour target was {} and your score is {}, CRITICAL SUCCESS!".format(vs_target, total)
+    elif d1 == 1 and d2 == 1 and dm_value == 2:
+        target_message = "\nYour target was {} and your score is {}, critical failure!".format(vs_target, total)
+    elif fantastic and total >= vs_target:
+        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC success!".format(vs_target, total)
+    elif fantastic and total < vs_target:
+        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC failure.".format(vs_target, total)
+    elif total >= vs_target:
+        target_message = "\nYour target was {} and your score is {}, you succeeded!".format(vs_target, total)
+    elif total < vs_target:
+        target_message = "\nYour target was {} and your score is {}, you failed.".format(vs_target, total)
+
+
+    return "{hero} D1: {d1}, D2: {d2}, DM: {dm}{ability_message}, Total: {total}{fantastic_message}{target_message}".format(
+        hero=hero,
+        d1=d1,
+        d2=d2,
+        dm=friendly_dm,
+        total=total,
+        ability_message=ability_message,
+        fantastic_message=fantastic_message,
+        target_message=target_message
+    )
+
 
 def params(command):
-    command_params = re.split("\W", command)
+    command_params = re.split(" ", command)
     command_params = [param for param in command_params if param]
-    power = command_params[0].lower()[0]
     command_params = command_params[1:]
     params = {}
     if len(command_params) == 1:
         param = command_params[0].lower()
-
         if param in DICE:
             param = param[1]
         elif param.isdigit():
@@ -57,7 +99,7 @@ def params(command):
 
 def d616(cap: captain_dice.CaptainDice, hero, command, params):
     cap.d616(hero, params.get("t") or 0)
-    return friendly_response(cap, hero, command, params)
+    return friendly_reply(cap, hero, command, params)
 
 
 def edge(cap: captain_dice.CaptainDice, hero, command, params):
@@ -68,7 +110,7 @@ def edge(cap: captain_dice.CaptainDice, hero, command, params):
             cap.edge(hero, "d2")
         elif params.get("m"):
             cap.edge(hero, "dm")
-        return friendly_response(cap, hero, command, params)
+        return friendly_reply(cap, hero, command, params)
     except KeyError:
         return "Captain Dice Here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
 
@@ -85,7 +127,7 @@ def init(cap: captain_dice.CaptainDice, hero, command, params):
 
 
 def pool(cap: captain_dice.CaptainDice, hero, command, params):
-    return friendly_response(cap, hero, command, params)
+    return friendly_reply(cap, hero, command, params)
 
 
 def set(cap: captain_dice.CaptainDice, hero, command, params):
@@ -108,7 +150,7 @@ def set(cap: captain_dice.CaptainDice, hero, command, params):
         pass
     cap.set(hero, d1, d2, dm)
 
-    return friendly_response(cap, hero, command, params)
+    return friendly_reply(cap, hero, command, params)
 
 
 def trouble(cap: captain_dice.CaptainDice, hero, command, params):
@@ -120,7 +162,7 @@ def trouble(cap: captain_dice.CaptainDice, hero, command, params):
             break
     if not trouble_applied:
         cap.trouble(hero, 1)
-    return friendly_response(cap, hero, command, params)
+    return friendly_reply(cap, hero, command, params)
 
 
 commands = {
