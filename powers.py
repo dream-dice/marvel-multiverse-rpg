@@ -18,40 +18,55 @@ def friendly_reply(cap: captain_dice.CaptainDice, hero, command, params):
 
     fantastic = dm == 1
     friendly_dm = "M" if fantastic else dm
-    fantastic_message = " Fantastic!" if fantastic else ""
+    fantastic_message = " **Fantastic!**" if fantastic else ""
     dm_value = 6 if fantastic else dm
 
+    extra_message = ""
+
     ability = params.get("a") or 0
-    ability_message = ", Ability: {}".format(ability) if ability != 0 else ""
+    extra_message = extra_message + \
+        ("**Ability** `{}`".format(ability) if ability != 0 else "")
 
     total = d1 + d2 + dm_value + ability
 
     vs_target = params.get("v") or 0
+    extra_message = extra_message + \
+        ("**Target** `{}`".format(vs_target) if vs_target != 0 else "")
+
+    if extra_message != "":
+        extra_message = "\n__Extra__ {}".format(extra_message)
+
     target_message = ""
     if vs_target == 0:
         target_message = ""
     elif d1 == 6 and d2 == 6 and dm_value == 6:
-        target_message = "\nYour target was {} and your score is {}, CRITICAL SUCCESS!".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, CRITICAL SUCCESS!".format(
+            vs_target, total)
     elif d1 == 1 and d2 == 1 and dm_value == 2:
-        target_message = "\nYour target was {} and your score is {}, critical failure!".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, critical failure!".format(
+            vs_target, total)
     elif fantastic and total >= vs_target:
-        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC success!".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC success!".format(
+            vs_target, total)
     elif fantastic and total < vs_target:
-        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC failure.".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC failure.".format(
+            vs_target, total)
     elif total >= vs_target:
-        target_message = "\nYour target was {} and your score is {}, you succeeded!".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, you succeeded!".format(
+            vs_target, total)
     elif total < vs_target:
-        target_message = "\nYour target was {} and your score is {}, you failed.".format(vs_target, total)
+        target_message = "\nYour target was {} and your score is {}, you failed.".format(
+            vs_target, total)
 
-
-    return "{hero} D1: {d1}, D2: {d2}, DM: {dm}{ability_message}, Total: {total}{fantastic_message}{target_message}".format(
+    return """__Hero__ @{hero}
+__Pool__ **D1** `{d1}` **D2** `{d2}` **DM** `{dm}` **Total** `{total}`{fantastic_message}{extra_message}{target_message}""".format(
         hero=hero,
         d1=d1,
         d2=d2,
         dm=friendly_dm,
         total=total,
-        ability_message=ability_message,
         fantastic_message=fantastic_message,
+        extra_message=extra_message,
         target_message=target_message
     )
 
