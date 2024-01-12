@@ -110,9 +110,11 @@ def edge(cap: captain_dice.CaptainDice, hero, command, params):
             cap.edge(hero, "d2")
         elif params.get("m"):
             cap.edge(hero, "dm")
+        else:
+            return "Captain Dice here, you need to specify either `d1, d2, dm` for more help ask `!cap help edge`"
         return friendly_reply(cap, hero, command, params)
     except KeyError:
-        return "Captain Dice Here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
+        return "Captain Dice here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
 
 
 def help(cap: captain_dice.CaptainDice, hero, command, params):
