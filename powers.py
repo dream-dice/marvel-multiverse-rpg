@@ -110,10 +110,14 @@ def set(cap: captain_dice.CaptainDice, hero, command, params):
 
 
 def trouble(cap: captain_dice.CaptainDice, hero, command, params):
+    trouble_applied = False
     for param in params:
         if isinstance(param, numbers.Number) or param.isdigit():
             cap.trouble(hero, int(param))
+            trouble_applied = True
             break
+    if not trouble_applied:
+        cap.trouble(hero, 1)
     return cap.heros
 
 
