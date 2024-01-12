@@ -40,22 +40,22 @@ def friendly_reply(cap: captain_dice.CaptainDice, hero, command, params):
     if vs_target == 0:
         target_message = ""
     elif d1 == 6 and d2 == 6 and dm_value == 6:
-        target_message = "\nYour target was {} and your score is {}, CRITICAL SUCCESS!".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, CRITICAL SUCCESS!".format(
             vs_target, total)
     elif d1 == 1 and d2 == 1 and dm_value == 2:
-        target_message = "\nYour target was {} and your score is {}, critical failure!".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, critical failure!".format(
             vs_target, total)
     elif fantastic and total >= vs_target:
-        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC success!".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, that is a FANTASTIC success!".format(
             vs_target, total)
     elif fantastic and total < vs_target:
-        target_message = "\nYour target was {} and your score is {}, that is a FANTASTIC failure.".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, that is a FANTASTIC failure.".format(
             vs_target, total)
     elif total >= vs_target:
-        target_message = "\nYour target was {} and your score is {}, you succeeded!".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, you succeeded!".format(
             vs_target, total)
     elif total < vs_target:
-        target_message = "\nYour target was {} and your score is {}, you failed.".format(
+        target_message = "\nYour target was `{}` and your score is `{}`, you failed.".format(
             vs_target, total)
 
     return """__Hero__ @{hero}
