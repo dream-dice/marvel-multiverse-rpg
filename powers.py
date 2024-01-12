@@ -3,6 +3,7 @@ import collections
 import numbers
 
 import captain_dice
+from power_descriptions import DESCRIPTIONS
 
 
 VALID_D6_VALUES = [1, 2, 3, 4, 5, 6]
@@ -135,7 +136,7 @@ def edge(cap: captain_dice.CaptainDice, hero, command, params):
 def help(cap: captain_dice.CaptainDice, hero, command, params):
     for key in params:
         if key in commands:
-            return "You want to know about {}".format(key)
+            return DESCRIPTIONS.get(key)
     return "Captain Dice here, I do not know how to help with `{}`. I can help with `help d616|d|pool|p|trouble|t|edge|e|set|s|init|i` commands.".format(command)
 
 
