@@ -1,6 +1,6 @@
 # Captain Dice
 
-[!Captain Dice](https://th.bing.com/th/id/OIG.pLqHEwrlDGh7ZXTyHuTM?pid=ImgGn)
+![Captain Dice](https://th.bing.com/th/id/OIG.pLqHEwrlDGh7ZXTyHuTM?pid=ImgGn)
 
 A Discord bot to help you roll dice for the Marvel Multiverse RPG game
 
