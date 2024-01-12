@@ -48,7 +48,7 @@ You will roll your edge separately, if you tried to let me do it I might do it w
 
 If you want to check your current dice pool just ask
 Remember all those other convinces for `d616`? You can use some of those here and they won't alter the dice you rolled
-`!cap pool|p name|n <username:string> vs_target|v <vs target:number> ability|a <ability:number>`
+`!cap pool|p vs_target|v <vs target:number> ability|a <ability:number>`
 
 ### Examples
 
@@ -92,7 +92,7 @@ Sometimes Captain Dice forgets things, usually due to his universe getting wiped
 Only a server admin can set the dice for someone else, Captain Dice doesn't condone cheaters and trolls in his server
 Whatever the case Captain Dice is here to correct any evil wrong doings
 
-`!cap set|s name|n <name:string> d1|1 <value:number> d2|2 <value:number> dm|m <value:number or m> trouble|t <trouble count:number> vs_target|v <vs target:number> ability|a <ability:number>`
+`!cap set|s d1|1 <value:number> d2|2 <value:number> dm|m <value:number or m> trouble|t <trouble count:number> vs_target|v <vs target:number> ability|a <ability:number>`
 `trouble`, `vs_target`, and `ability` are optional
 
 ### Examples
@@ -105,11 +105,11 @@ Whatever the case Captain Dice is here to correct any evil wrong doings
 Captain Dice is a little tired now, but this is the general idea
 
 `!cap init|i start|s`
-`!cap init|i join|j name|n <name:string> ability|a <ability:number> edge|e`
-`!cap init|i leave|l name|n <name:string> ability|a <ability:number> edge|e`
+`!cap init|i join|j ability|a <ability:number> edge|e`
+`!cap init|i leave|l ability|a <ability:number> edge|e`
 `!cap init|i next|n`
 `!cap init|i previous|p`
-`!cap init|i turn|t name|n <name or username:string>`
+`!cap init|i turn|t <name or username:string>`
 `!cap init|i view|v`
 `!cap init|i end|e`
 
