@@ -9,6 +9,8 @@ VALID_D6_VALUES = [1, 2, 3, 4, 5, 6]
 VALID_DM_VALUES = VALID_D6_VALUES + ["m", "M"]
 DICE = ["d1", "d2", "dm"]
 
+def friendly_response(cap: captain_dice.CaptainDice, hero, command, params):
+    return cap.heros[hero]
 
 def params(command):
     command_params = re.split("\W", command)
@@ -55,7 +57,7 @@ def params(command):
 
 def d616(cap: captain_dice.CaptainDice, hero, command, params):
     cap.d616(hero, params.get("t") or 0)
-    return cap.heros
+    return friendly_response(cap, hero, command, params)
 
 
 def edge(cap: captain_dice.CaptainDice, hero, command, params):
@@ -66,7 +68,7 @@ def edge(cap: captain_dice.CaptainDice, hero, command, params):
             cap.edge(hero, "d2")
         elif params.get("m"):
             cap.edge(hero, "dm")
-        return cap.heros
+        return friendly_response(cap, hero, command, params)
     except KeyError:
         return "Captain Dice Here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
 
@@ -83,7 +85,7 @@ def init(cap: captain_dice.CaptainDice, hero, command, params):
 
 
 def pool(cap: captain_dice.CaptainDice, hero, command, params):
-    return cap.heros
+    return friendly_response(cap, hero, command, params)
 
 
 def set(cap: captain_dice.CaptainDice, hero, command, params):
@@ -106,7 +108,7 @@ def set(cap: captain_dice.CaptainDice, hero, command, params):
         pass
     cap.set(hero, d1, d2, dm)
 
-    return cap.heros
+    return friendly_response(cap, hero, command, params)
 
 
 def trouble(cap: captain_dice.CaptainDice, hero, command, params):
@@ -118,7 +120,7 @@ def trouble(cap: captain_dice.CaptainDice, hero, command, params):
             break
     if not trouble_applied:
         cap.trouble(hero, 1)
-    return cap.heros
+    return friendly_response(cap, hero, command, params)
 
 
 commands = {
