@@ -13,6 +13,7 @@ def test(hero_request, name=hero):
 test("!cap x")
 
 # print("=== help ===")
+test("!cap h")
 # test("!cap     help    d616   ")
 # test("!cap     h    d   ")
 # test("!cap     h    1 2 x 3 d")
