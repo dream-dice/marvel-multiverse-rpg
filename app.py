@@ -25,9 +25,10 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    hero = message.author.name
+    hero_server = message.guild.name
+    hero_name = message.author.name
     hero_request = message.content
-    result = power.power(hero, hero_request)
+    result = power.power("{}.{}".format(hero_server, hero_name), hero_request)
     if result:
         await message.channel.send(result)
 
