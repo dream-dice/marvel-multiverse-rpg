@@ -194,7 +194,7 @@ commands = {
 }
 
 
-def default_fn(hero, command, _):
+def default_fn(self, hero, command, _):
     return "Captain Dice here, sorry @{} I do not know what `{}` is. Run `!cap help` for me to come to the rescue.".format(hero, command)
 
 
