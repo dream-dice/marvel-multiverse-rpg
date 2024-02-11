@@ -11,7 +11,7 @@ VALID_DM_VALUES = VALID_D6_VALUES + ["m", "M"]
 DICE = ["d1", "d2", "dm"]
 
 
-def friendly_reply(cap: captain_dice.CaptainDice, hero, command, params):
+def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     pool = cap.heros[hero]
     d1 = pool["d1"]
     d2 = pool["d2"]
@@ -61,7 +61,7 @@ def friendly_reply(cap: captain_dice.CaptainDice, hero, command, params):
 
     return """__Hero__ @{hero}
 __Pool__ **D1** `{d1}` **D2** `{d2}` **DM** `{dm}` **Total** `{total}`{fantastic_message}{extra_message}{target_message}""".format(
-        hero=hero,
+        hero=hero_name,
         d1=d1,
         d2=d2,
         dm=friendly_dm,
@@ -113,12 +113,12 @@ def params(command):
     return collections.OrderedDict(sorted(params.items()))
 
 
-def d616(cap: captain_dice.CaptainDice, hero, command, params):
+def d616(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     cap.d616(hero, params.get("t") or 0)
-    return friendly_reply(cap, hero, command, params)
+    return friendly_reply(cap, hero, hero_name, command, params)
 
 
-def edge(cap: captain_dice.CaptainDice, hero, command, params):
+def edge(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     try:
         if params.get("1"):
             cap.edge(hero, "d1")
@@ -128,12 +128,12 @@ def edge(cap: captain_dice.CaptainDice, hero, command, params):
             cap.edge(hero, "dm")
         else:
             return "Captain Dice here, you need to specify either `d1, d2, dm` for more help ask `!cap help edge`"
-        return friendly_reply(cap, hero, command, params)
+        return friendly_reply(cap, hero, hero_name, command, params)
     except KeyError:
         return "Captain Dice here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
 
 
-def help(cap: captain_dice.CaptainDice, hero, command, params):
+def help(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     for key in params:
         if key in commands:
             return DESCRIPTIONS.get(key)
@@ -142,15 +142,15 @@ def help(cap: captain_dice.CaptainDice, hero, command, params):
     return "Captain Dice here, I do not know how to help with `{}`. I can help with `help d616|d|pool|p|trouble|t|edge|e|set|s|init|i` commands.".format(command)
 
 
-def init(cap: captain_dice.CaptainDice, hero, command, params):
+def init(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     pass
 
 
-def pool(cap: captain_dice.CaptainDice, hero, command, params):
-    return friendly_reply(cap, hero, command, params)
+def pool(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
+    return friendly_reply(cap, hero, hero_name, command, params)
 
 
-def set(cap: captain_dice.CaptainDice, hero, command, params):
+def set(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     d1 = params.get("1")
     d2 = params.get("2")
     dm = params.get("m")
@@ -170,10 +170,10 @@ def set(cap: captain_dice.CaptainDice, hero, command, params):
         pass
     cap.set(hero, d1, d2, dm)
 
-    return friendly_reply(cap, hero, command, params)
+    return friendly_reply(cap, hero, hero_name, command, params)
 
 
-def trouble(cap: captain_dice.CaptainDice, hero, command, params):
+def trouble(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     trouble_applied = False
     for param in params:
         if isinstance(param, numbers.Number) or param.isdigit():
@@ -182,7 +182,7 @@ def trouble(cap: captain_dice.CaptainDice, hero, command, params):
             break
     if not trouble_applied:
         cap.trouble(hero, 1)
-    return friendly_reply(cap, hero, command, params)
+    return friendly_reply(cap, hero, hero_name, command, params)
 
 
 commands = {
@@ -196,21 +196,21 @@ commands = {
 }
 
 
-def default_fn(self, hero, command, _):
-    return "Captain Dice here, sorry @{} I do not know what `{}` is. Run `!cap help` for me to come to the rescue.".format(hero, command)
+def default_fn(self, hero, hero_name, command, _):
+    return "Captain Dice here, sorry @{} I do not know what `{}` is. Run `!cap help` for me to come to the rescue.".format(hero_name, command)
 
 
 class Power:
     def __init__(self):
         self.cap = captain_dice.CaptainDice()
 
-    def power(self, hero, hero_request):
+    def power(self, hero, hero_name, hero_request):
         if not hero_request.startswith('!cap'):
             return
         command = re.match("!cap(.*)", hero_request).groups()[0].strip()
 
         if command == '':
-            return default_fn(hero, command)
+            return default_fn(hero, hero_name, command)
 
         fn = commands.get(command[0]) or default_fn
-        return fn(self.cap, hero, command, params(command))
+        return fn(self.cap, hero, hero_name, command, params(command))

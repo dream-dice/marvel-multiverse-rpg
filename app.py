@@ -1,5 +1,6 @@
 import os
 
+import bcrypt
 import discord
 
 from dotenv import load_dotenv
@@ -27,10 +28,13 @@ async def on_message(message):
 
     hero_server = message.guild.name
     hero_name = message.author.name
+    hero = str(bcrypt.hashpw("{}.{}".format(hero_server, hero_name).encode(), salt))
+
     hero_request = message.content
-    result = power.power("{}.{}".format(hero_server, hero_name), hero_request)
+    result = power.power(hero, hero_name, hero_request)
     if result:
         await message.channel.send(result)
 
 token = os.environ['TOKEN']
+salt = bytes(os.environ['SALT'], 'utf8')
 client.run(token)
