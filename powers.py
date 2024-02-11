@@ -11,7 +11,7 @@ VALID_DM_VALUES = VALID_D6_VALUES + ["m", "M"]
 DICE = ["d1", "d2", "dm"]
 
 
-def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
+def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, params, message=''):
     pool = cap.heros[hero]
     d1 = pool["d1"]
     d2 = pool["d2"]
@@ -59,8 +59,12 @@ def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, para
         target_message = "\nYour target was `{}` and your score is `{}`, you failed.".format(
             vs_target, total)
 
-    return """__Hero__ @{hero}
+    if message:
+        message = "{}\n".format(message)
+
+    return """{message}__Hero__ @{hero}
 __Pool__ **D1** `{d1}` **D2** `{d2}` **DM** `{dm}` **Total** `{total}`{fantastic_message}{extra_message}{target_message}""".format(
+        message=message,
         hero=hero_name,
         d1=d1,
         d2=d2,
@@ -113,22 +117,42 @@ def params(command):
     return collections.OrderedDict(sorted(params.items()))
 
 
+def trouble_message(rolled):
+    return "Captain Dice here, I have rolled a trouble for you, the results are:\n{}".format("\n".join(map(str, rolled)))
+
 def d616(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
-    cap.d616(hero, params.get("t") or 0)
+    trouble_rolled = cap.d616(hero, params.get("t") or 0)
+    if trouble_rolled and len(trouble_rolled) > 0:
+        message = trouble_message(trouble_rolled)
+        return friendly_reply(cap, hero, hero_name, command, params, message)
     return friendly_reply(cap, hero, hero_name, command, params)
 
 
 def edge(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     try:
+        new_value = ''
+        original_value = ''
         if params.get("1"):
-            cap.edge(hero, "d1")
+            original_value = cap.pool(hero).get("d1")
+            new_value = cap.edge(hero, "d1")
         elif params.get("2"):
-            cap.edge(hero, "d2")
+            original_value = cap.pool(hero).get("d2")
+            new_value = cap.edge(hero, "d2")
         elif params.get("m"):
-            cap.edge(hero, "dm")
+            original_value = cap.pool(hero).get("dm")
+            new_value = cap.edge(hero, "dm")
         else:
             return "Captain Dice here, you need to specify either `d1, d2, dm` for more help ask `!cap help edge`"
-        return friendly_reply(cap, hero, hero_name, command, params)
+
+        message = "Captain Dice here, your value is still `{}` as I rolled a `{}`".format(original_value, new_value)
+
+        if (params.get("m") and new_value == 1 and original_value != 1):
+            message = "Captain Dice here, your new value is `{}` replacing `{}`".format('M', original_value)
+        elif (new_value > original_value):
+            message = "Captain Dice here, your new value is `{}` replacing `{}`".format(new_value, original_value)
+            
+        return friendly_reply(cap, hero, hero_name, command, params, message)
+
     except KeyError:
         return "Captain Dice here, looks like @{} doesn't have a Pool yet, you need to run `!cap d616` first, for more help ask `!cap help edge` or `!cap help d616`".format(hero)
 
@@ -175,14 +199,16 @@ def set(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
 
 def trouble(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     trouble_applied = False
+    rolled = []
     for param in params:
         if isinstance(param, numbers.Number) or param.isdigit():
-            cap.trouble(hero, int(param))
+            rolled = cap.trouble(hero, int(param))
             trouble_applied = True
             break
     if not trouble_applied:
-        cap.trouble(hero, 1)
-    return friendly_reply(cap, hero, hero_name, command, params)
+        rolled = cap.trouble(hero, 1)
+
+    return friendly_reply(cap, hero, hero_name, command, params, trouble_message(rolled))
 
 
 commands = {

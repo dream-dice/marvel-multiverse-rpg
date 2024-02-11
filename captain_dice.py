@@ -33,18 +33,33 @@ def d6():
 
 
 def roll_trouble(pool, trouble=0):
+    rolled = []
     for _ in range(trouble):
         highest_die = max_dice(pool)
         current = pool[highest_die]
         new_value = d6()
         if highest_die == 'dm' and new_value == 1:
+            current_str = current
+            if current == 1:
+                current_str = 'M'
+            rolled.append("**{}** `{}` -> `{}`".format(highest_die, current_str, current_str))
             pool["dm"] = current
         elif highest_die == 'dm' and current == 1:
+            current_str = current
+            if current == 1:
+                current_str = 'M'
+            new_str = new_value
+            if new_value == 1:
+                new_str = 'M'
+            rolled.append("**{}** `{}` -> `{}`".format(highest_die, current_str, new_str))
             pool["dm"] = new_value
         elif new_value < current:
+            rolled.append("**{}** `{}` -> `{}`".format(highest_die, current, new_value))
             pool[highest_die] = new_value
+        else:
+            rolled.append("`{}` is not lower than **D1** `{}`, **D2** `{}`, **DM** `{}`".format(new_value, pool["d1"], pool["d2"], pool["dm"]))
 
-    return pool
+    return pool, rolled
 
 
 class CaptainDice:
@@ -57,13 +72,15 @@ class CaptainDice:
             "d2": d6(),
             "dm": d6()
         }
-        self.heros[hero] = roll_trouble(pool, trouble)
+        self.heros[hero], trouble_rolled = roll_trouble(pool, trouble)
         save(self.heros)
+        return trouble_rolled
 
     def trouble(self, hero, trouble=0):
         pool = self.heros[hero]
-        self.heros[hero] = roll_trouble(pool, trouble)
+        self.heros[hero], rolled = roll_trouble(pool, trouble)
         save(self.heros)
+        return rolled
 
     def edge(self, hero, dice):
         pool = self.heros[hero]
@@ -77,6 +94,7 @@ class CaptainDice:
             pool[dice] = new_value
         self.heros[hero] = pool
         save(self.heros)
+        return new_value
 
     def set(self, hero, d1, d2, dm):
         pool = self.heros.get(hero) or {}
