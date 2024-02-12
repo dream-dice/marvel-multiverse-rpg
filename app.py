@@ -48,6 +48,6 @@ token = os.environ['TOKEN']
 salt = bytes(os.environ['SALT'], 'utf8')
 
 
-cherrypy.config.update({'server.socket_port': 3219})
+cherrypy.config.update({'server.socket_port': 80})
 cherrypy.quickstart(HelloWorld())
 client.run(token)
