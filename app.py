@@ -2,7 +2,6 @@ import os
 
 import bcrypt
 import discord
-import cherrypy
 
 from dotenv import load_dotenv
 
@@ -36,18 +35,7 @@ async def on_message(message):
     if result:
         await message.channel.send(result)
 
-
-
-class HelloWorld:
-    @cherrypy.expose
-    def index(self):
-        return "Hello, world!"
-
-
 token = os.environ['TOKEN']
 salt = bytes(os.environ['SALT'], 'utf8')
 
-
-cherrypy.config.update({'server.socket_port': 80})
-cherrypy.quickstart(HelloWorld())
 client.run(token)
