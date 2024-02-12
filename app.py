@@ -36,9 +36,6 @@ async def on_message(message):
     if result:
         await message.channel.send(result)
 
-token = os.environ['TOKEN']
-salt = bytes(os.environ['SALT'], 'utf8')
-client.run(token)
 
 
 class HelloWorld:
@@ -47,4 +44,7 @@ class HelloWorld:
         return "Hello, world!"
 
 
+token = os.environ['TOKEN']
+salt = bytes(os.environ['SALT'], 'utf8')
 cherrypy.quickstart(HelloWorld())
+client.run(token)
