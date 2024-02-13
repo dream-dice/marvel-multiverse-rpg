@@ -71,7 +71,9 @@ This does not change the values in your Pool.
 You can combine these extra parameters in any order.
 `!cap set ability 3 vs_target 12` will combine all three.""",
 "i": """Captain Dice here, helping you to activate my power `init`
-Whoops, you can't do this one right now
+This will generate a URL for you so you can play in the browser.
+I will send you a link via DM.
+This link identifies you as a player.
 """,
 "h": """Captain Dice here, helping you to activate my power `help`
 Did you do this to see if you could get help on help? One of Captain Dice's mortal enemies are Trolls!

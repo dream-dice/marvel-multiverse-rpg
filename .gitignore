@@ -1,4 +1,8 @@
 __pycache__
 .env
 heros.json
+webhooks.json
 .vscode
+*.key
+*.pub
+login.sh

@@ -11,8 +11,8 @@ VALID_DM_VALUES = VALID_D6_VALUES + ["m", "M"]
 DICE = ["d1", "d2", "dm"]
 
 
-def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, params, message=''):
-    pool = cap.heros[hero]
+def friendly_reply(cap: captain_dice.CaptainDice, hero, hero_name, command, params, message=""):
+    pool = cap.pool(hero)
     d1 = pool["d1"]
     d2 = pool["d2"]
     dm = pool["dm"]
@@ -130,8 +130,8 @@ def d616(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
 
 def edge(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     try:
-        new_value = ''
-        original_value = ''
+        new_value = ""
+        original_value = ""
         if params.get("1"):
             original_value = cap.pool(hero).get("d1")
             new_value = cap.edge(hero, "d1")
@@ -147,7 +147,7 @@ def edge(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
         message = "Captain Dice here, your value is still `{}` as I rolled a `{}`".format(original_value, new_value)
 
         if (params.get("m") and new_value == 1 and original_value != 1):
-            message = "Captain Dice here, your new value is `{}` replacing `{}`".format('M', original_value)
+            message = "Captain Dice here, your new value is `{}` replacing `{}`".format("M", original_value)
         elif (new_value > original_value):
             message = "Captain Dice here, your new value is `{}` replacing `{}`".format(new_value, original_value)
             
@@ -162,11 +162,11 @@ def help(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
         if key in commands:
             return DESCRIPTIONS.get(key)
     if len(params) == 0:
-        return "Captain Dice here, I can help with `d616|d|pool|p|trouble|t|edge|e|set|s|init|i` commands."
-    return "Captain Dice here, I do not know how to help with `{}`. I can help with `help d616|d|pool|p|trouble|t|edge|e|set|s|init|i` commands.".format(command)
+        return "Captain Dice here, I can help with `d616|d|pool|p|trouble|t|edge|e|set|s|join|j` commands."
+    return "Captain Dice here, I do not know how to help with `{}`. I can help with `help d616|d|pool|p|trouble|t|edge|e|set|s|join|j` commands.".format(command)
 
 
-def init(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
+def join(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
     pass
 
 
@@ -215,7 +215,7 @@ commands = {
     "d": d616,
     "e": edge,
     "h": help,
-    "i": init,
+    "j": join,
     "p": pool,
     "s": set,
     "t": trouble
@@ -231,11 +231,11 @@ class Power:
         self.cap = captain_dice.CaptainDice()
 
     def power(self, hero, hero_name, hero_request):
-        if not hero_request.startswith('!cap'):
+        if not hero_request.startswith("!cap"):
             return
         command = re.match("!cap(.*)", hero_request).groups()[0].strip()
 
-        if command == '':
+        if command == "":
             return default_fn(hero, hero_name, command)
 
         fn = commands.get(command[0]) or default_fn

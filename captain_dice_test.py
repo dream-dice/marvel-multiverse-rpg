@@ -33,4 +33,5 @@ cap.d616(hero, trouble=100)
 print(cap.pool(hero))
 
 print('=== init ===')
-print('going to do later')
+print(cap.init(hero, 1234))
+
