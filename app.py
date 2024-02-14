@@ -10,7 +10,7 @@ import discord
 from dotenv import load_dotenv
 
 import powers
-import routes
+import multiverse
 
 
 load_dotenv()
@@ -21,6 +21,10 @@ client = discord.Client(intents=intents)
 power = powers.Power()
 token = os.environ['TOKEN']
 salt = bytes(os.environ['SALT'], 'utf8')
+port = os.environ['PORT']
+base_route = os.environ['BASE_ROUTE']
+discord_client_id = os.environ['DISCORD_CLIENT_ID']
+discord_client_secret = os.environ['DISCORD_CLIENT_SECRET']
 
 @client.event
 async def on_ready():
@@ -46,13 +50,23 @@ async def on_message(message):
     if result:
         await message.channel.send(result)
 
-
 def start_cherrypy(client):
     cherrypy.config.update({
         'engine.autoreload.on': False,
-        'server.socket_port': 8099
+        'tools.sessions.on': True,
+        'tools.sessions.timeout': 60,
+        'tools.sessions.secure': True,
+        'tools.sessions.httponly': True,
+        'server.socket_port': int(port)
     })
-    cherrypy.tree.mount(routes.D616(client), '/d616')
+    cherrypy.tree.mount(
+        multiverse.Multiverse(
+            client,
+            discord_client_id,
+            discord_client_secret
+        ),
+        base_route
+    )
     cherrypy.engine.start()
 
 
