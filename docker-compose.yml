@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8099:8099
+    volumes:
+      - .:/app
+    command: python app.py
+    environment:
+        - CASSANDRA_CLUSTER_NAME=Muliverse
+        - CASSANDRA_USER=cassandra
+        - CASSANDRA_PASSWORD=cassandra
+    depends_on:
+      - cassandra
+  cassandra:
+      image: cassandra:3.11.2
+      container_name: cassandra
+      ports:
+        - 9042:9042
+      volumes:
+        - ./mnt/cassandra:/var/lib/cassandra
+      environment:
+        - CASSANDRA_CLUSTER_NAME=Muliverse
+        - CASSANDRA_USER=cassandra
+        - CASSANDRA_PASSWORD=cassandra

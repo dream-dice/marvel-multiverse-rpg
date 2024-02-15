@@ -52,6 +52,7 @@ async def on_message(message):
 
 def start_cherrypy(client):
     cherrypy.config.update({
+        'server.socket_host': '0.0.0.0',
         'engine.autoreload.on': False,
         'tools.sessions.on': True,
         'tools.sessions.timeout': 60,

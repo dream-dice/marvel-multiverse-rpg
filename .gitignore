@@ -6,3 +6,4 @@ webhooks.json
 *.key
 *.pub
 login.sh
+mnt

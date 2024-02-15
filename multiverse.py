@@ -4,6 +4,21 @@ import urllib.parse
 
 import cherrypy
 
+
+from cassandra.cluster import Cluster
+from cassandra.auth import PlainTextAuthProvider
+
+auth_provider = PlainTextAuthProvider(
+    username='cassandra',
+    password='cassandra'
+)
+cluster = Cluster(
+    auth_provider=auth_provider,
+    contact_points=['cassandra'],
+    port=9042
+)
+
+
 API_ENDPOINT = 'https://discord.com/api/v10'
 
 
@@ -92,6 +107,11 @@ class Multiverse():
             self.send_message(self.client, 1090624671881363500, 'Hello'),
             self.client.loop
         )
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def db(self):
+        return {"hello": "world"}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
