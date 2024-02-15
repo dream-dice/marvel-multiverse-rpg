@@ -2,22 +2,10 @@ import asyncio
 import requests
 import urllib.parse
 
+from discord import SyncWebhook
 import cherrypy
 
-
-from cassandra.cluster import Cluster
-from cassandra.auth import PlainTextAuthProvider
-
-auth_provider = PlainTextAuthProvider(
-    username='cassandra',
-    password='cassandra'
-)
-cluster = Cluster(
-    auth_provider=auth_provider,
-    contact_points=['cassandra'],
-    port=9042
-)
-
+from marvel import Marvel
 
 API_ENDPOINT = 'https://discord.com/api/v10'
 
@@ -101,6 +89,7 @@ class Multiverse():
         self.client = client
         self.discord_client_id = discord_client_id
         self.discord_client_secret = discord_client_secret
+        self.mdb = Marvel()
 
     def reply(self):
         asyncio.run_coroutine_threadsafe(
@@ -116,22 +105,44 @@ class Multiverse():
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def d616(self):
-        # self.reply()
-        access_token = 'PzvIb3VTIe6XqN1yHiEQLWeFllaVRd'
-        user = get_user(access_token)
-        guilds = get_guilds(access_token)
-        # channel = get_channel(access_token, '1090624670467899424')
-        return {
-            "user": user,
-            "guilds": guilds
-        }
+        id = cherrypy.session.get("user_id")
+        user = self.mdb.get_user(id)
+        guilds = get_guilds(user.access_token)
+        for guild in guilds:
+            if "luke" in guild["name"].lower():
+                channels = get_channels(user.access_token, guild["id"])
+                print(channels)
+        return {"guilds": guilds}
 
     @cherrypy.expose
-    def callback(self, state, code):
-        res = exchange_code(self.discord_client_id,
-                            self.discord_client_secret, code)
+    def callback(self, state, code, guild_id):
+        res = exchange_code(
+            self.discord_client_id,
+            self.discord_client_secret,
+            code
+        )
 
-        return "Hello, world! {} {} {}".format(state, code, res)
+        webhook_id = res["webhook"]["id"]
+        webhook_token = res["webhook"]["token"]
+        webhook_url = 'https://discord.com/api/webhooks/{webhook_id}/{webhook_token}'.format(
+            webhook_id=webhook_id,
+            webhook_token=webhook_token
+        )
+        webhook = SyncWebhook.from_url(webhook_url)
+        webhook.send("Hello, World!")
+
+        access_token = res["access_token"]
+        expires_in = res["expires_in"]
+        refresh_token = res["refresh_token"]
+        user = get_user(res["access_token"])
+        id = user["id"]
+        username = user["username"]
+
+        cherrypy.session["user_id"] = id
+        self.mdb.add_user(id, username, access_token,
+                          refresh_token, expires_in)
+
+        return "Hello, world! {} {} {} {}".format(state, code, res, user)
 
     @cherrypy.expose
     def index(self):
@@ -139,7 +150,7 @@ class Multiverse():
 
         redirect_uri = "https://local.trailapp.com/robot/callback"
         encoded_uri = urllib.parse.quote_plus(redirect_uri)
-        login_url = "https://discord.com/oauth2/authorize?response_type=code&client_id={}&scope=identify%20guilds&state={}&redirect_uri={}&prompt=consent".format(
+        login_url = "https://discord.com/oauth2/authorize?response_type=code&client_id={}&scope=identify%20guilds%20webhook.incoming&state={}&redirect_uri={}&prompt=consent".format(
             self.discord_client_id,
             session_id,
             encoded_uri

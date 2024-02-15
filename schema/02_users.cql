@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS marvel.users (
+    id text,
     username text,
-    "token" text,
+    access_token text,
     refresh_token text,
     expires timestamp,
-    PRIMARY KEY (username)
+    PRIMARY KEY (id)
 );

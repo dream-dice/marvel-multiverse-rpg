@@ -55,6 +55,8 @@ def start_cherrypy(client):
         'server.socket_host': '0.0.0.0',
         'engine.autoreload.on': False,
         'tools.sessions.on': True,
+        "tools.sessions.storage_class": cherrypy.lib.sessions.FileSession,
+        "tools.sessions.storage_path": "/app/sessions",
         'tools.sessions.timeout': 60,
         'tools.sessions.secure': True,
         'tools.sessions.httponly': True,

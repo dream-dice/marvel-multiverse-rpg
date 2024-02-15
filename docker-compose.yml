@@ -7,6 +7,7 @@ services:
       - 8099:8099
     volumes:
       - .:/app
+      - ./mnt/sessions:/app/sessions
     command: python app.py
     environment:
         - CASSANDRA_CLUSTER_NAME=Muliverse
