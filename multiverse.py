@@ -100,7 +100,10 @@ class Multiverse():
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def db(self):
-        return {"hello": "world"}
+        bacon = cherrypy.session.get("bacon")
+        cherrypy.session["bacon"] = "soup"
+
+        return {"hello": bacon}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

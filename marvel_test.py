@@ -2,23 +2,23 @@ import marvel
 
 mdb = marvel.Marvel()
 
-# session = mdb.session()
-# session.execute("DROP TABLE marvel.users")
-# session.execute("DROP TABLE marvel.heroes")
-# session.execute("DROP TABLE marvel.pools")
-# mdb.run_schema()
+session = mdb.session()
+session.execute("DROP TABLE marvel.users")
+session.execute("DROP TABLE marvel.heroes")
+session.execute("DROP TABLE marvel.pools")
+mdb.run_schema()
 
-session.execute("select * from marvel.users").all()
+# session.execute("select * from marvel.users").all()
 
-id = 82764823764237846
-username = 'user'
-access_token = 'an_access_token'
-refresh_token = 'a_refresh_token'
-expires_in = 604800
+# id = 82764823764237846
+# username = 'user'
+# access_token = 'an_access_token'
+# refresh_token = 'a_refresh_token'
+# expires_in = 604800
 
-mdb.add_user(id, username, access_token, refresh_token, expires_in)
-user = mdb.get_user(id)
-print(user)
+# mdb.add_user(id, username, access_token, refresh_token, expires_in)
+# user = mdb.get_user(id)
+# print(user)
 
 
 

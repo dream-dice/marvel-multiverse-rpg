@@ -1,3 +1,4 @@
+import json
 import os
 import datetime
 import time
@@ -38,7 +39,7 @@ class Marvel():
             now = datetime.datetime.now()
             expires = now + datetime.timedelta(seconds=expires_in)
             unix_timestamp = int(time.mktime(expires.timetuple()) * 1000)
-            
+
             query = """INSERT INTO marvel.users (
                 id,
                 username,
@@ -127,6 +128,44 @@ class Marvel():
             query = "SELECT * FROM marvel.pools WHERE hero_id = '{}';".format(
                 hero_id)
             return session.execute(query).one()
+        except Exception as e:
+            print(e)
+        finally:
+            session.shutdown()
+
+    def set_cherry_session(self, id, data, expiration_time, timestamp):
+        try:
+            session = self.cluster.connect()
+            query = "INSERT INTO marvel.cherry_session (id, data, expiration_timestamp, timestamp) VALUES ('{}', '{}', '{}', '{}') IF NOT EXISTS;".format(
+                id,
+                json.dumps(data),
+                expiration_time,
+                timestamp
+            )
+            session.execute(query)
+        except Exception as e:
+            print(e)
+        finally:
+            session.shutdown()
+
+    def get_cherry_session(self, id):
+        try:
+            session = self.cluster.connect()
+            query = "SELECT * FROM marvel.cherry_session WHERE id = '{}';".format(
+                id)
+            result_set = session.execute(query).one()
+            return (json.loads(result_set.data), datetime.datetime.strptime(result_set.expiration_timestamp, '%Y-%m-%d %H:%M:%S.%f'))
+        except Exception as e:
+            print(e)
+        finally:
+            session.shutdown()
+
+    def delete_cherry_session(self, id):
+        try:
+            session = self.cluster.connect()
+            query = "DELETE FROM marvel.cherry_session WHERE id = '{}';".format(
+                id)
+            session.execute(query)
         except Exception as e:
             print(e)
         finally:
