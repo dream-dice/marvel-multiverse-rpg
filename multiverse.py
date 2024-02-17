@@ -85,7 +85,7 @@ def revoke_access_token(access_token, client_id, client_secret):
 
 
 async def send_message(client, channel_id, message):
-    channel = client.get_channel(channel_id)
+    channel = client.get_channel(int(channel_id))
     await channel.send(message)
 
 
@@ -96,9 +96,9 @@ class Multiverse():
         self.discord_client_secret = discord_client_secret
         self.mdb = Marvel()
 
-    def reply(self):
+    def message(self, channel_id):
         asyncio.run_coroutine_threadsafe(
-            self.send_message(self.client, 1090624671881363500, 'Hello'),
+            send_message(self.client, channel_id, 'Hello'),
             self.client.loop
         )
 
@@ -118,28 +118,20 @@ class Multiverse():
         guilds = get_guilds(access_token)
         channels = []
         for guild in guilds:
-            if "intrepid" in guild["name"].lower():
-                print(guild)
+            if "luke" in guild["name"].lower():
                 channels = get_channels(guild["id"])
+        for chanel in channels:
+            if "general" == chanel["name"]:
+                self.message(chanel["id"])
         return "{}".format(channels)
 
     @cherrypy.expose
-    # def callback(self, state, code, guild_id):
     def callback(self, state, code):
         res = exchange_code(
             self.discord_client_id,
             self.discord_client_secret,
             code
         )
-
-        # webhook_id = res["webhook"]["id"]
-        # webhook_token = res["webhook"]["token"]
-        # webhook_url = 'https://discord.com/api/webhooks/{webhook_id}/{webhook_token}'.format(
-        #     webhook_id=webhook_id,
-        #     webhook_token=webhook_token
-        # )
-        # webhook = SyncWebhook.from_url(webhook_url)
-        # webhook.send("Hello, World!")
 
         access_token = res["access_token"]
         expires_in = res["expires_in"]
