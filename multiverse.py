@@ -1,13 +1,18 @@
 import asyncio
+import os
 import requests
 import urllib.parse
 
+from dotenv import load_dotenv
 from discord import SyncWebhook
 import cherrypy
 
 from marvel import Marvel
 
 API_ENDPOINT = 'https://discord.com/api/v10'
+
+load_dotenv()
+token = os.environ['TOKEN']
 
 
 def get_user(access_token):
@@ -28,9 +33,9 @@ def get_guilds(access_token):
     return r.json()
 
 
-def get_channels(access_token, guild_id):
+def get_channels(guild_id):
     headers = {
-        'Authorization': 'Bearer %s' % access_token
+        'Authorization': 'Bot %s' % token
     }
     r = requests.get('%s/guilds/%s/channels' %
                      (API_ENDPOINT, guild_id), headers=headers)
@@ -106,33 +111,35 @@ class Multiverse():
         return {"hello": bacon}
 
     @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def d616(self):
-        id = cherrypy.session.get("user_id")
-        user = self.mdb.get_user(id)
-        guilds = get_guilds(user.access_token)
+    def get(self):
+        user_id = cherrypy.session.get("user_id")
+        user = self.mdb.get_user(user_id)
+        access_token = user.access_token
+        guilds = get_guilds(access_token)
+        channels = []
         for guild in guilds:
-            if "luke" in guild["name"].lower():
-                channels = get_channels(user.access_token, guild["id"])
-                print(channels)
-        return {"guilds": guilds}
+            if "intrepid" in guild["name"].lower():
+                print(guild)
+                channels = get_channels(guild["id"])
+        return "{}".format(channels)
 
     @cherrypy.expose
-    def callback(self, state, code, guild_id):
+    # def callback(self, state, code, guild_id):
+    def callback(self, state, code):
         res = exchange_code(
             self.discord_client_id,
             self.discord_client_secret,
             code
         )
 
-        webhook_id = res["webhook"]["id"]
-        webhook_token = res["webhook"]["token"]
-        webhook_url = 'https://discord.com/api/webhooks/{webhook_id}/{webhook_token}'.format(
-            webhook_id=webhook_id,
-            webhook_token=webhook_token
-        )
-        webhook = SyncWebhook.from_url(webhook_url)
-        webhook.send("Hello, World!")
+        # webhook_id = res["webhook"]["id"]
+        # webhook_token = res["webhook"]["token"]
+        # webhook_url = 'https://discord.com/api/webhooks/{webhook_id}/{webhook_token}'.format(
+        #     webhook_id=webhook_id,
+        #     webhook_token=webhook_token
+        # )
+        # webhook = SyncWebhook.from_url(webhook_url)
+        # webhook.send("Hello, World!")
 
         access_token = res["access_token"]
         expires_in = res["expires_in"]
@@ -141,11 +148,19 @@ class Multiverse():
         id = user["id"]
         username = user["username"]
 
+        guilds = get_guilds(access_token)
+
         cherrypy.session["user_id"] = id
         self.mdb.add_user(id, username, access_token,
                           refresh_token, expires_in)
 
-        return "Hello, world! {} {} {} {}".format(state, code, res, user)
+        channels = []
+        for guild in guilds:
+            if "luke" in guild["name"].lower():
+                channels = get_channels(access_token, guild["id"])
+                print(channels)
+
+        return "Hello, world! {} {} {} {} {} {}".format(state, code, res, user, guilds, channels)
 
     @cherrypy.expose
     def index(self):
@@ -153,8 +168,11 @@ class Multiverse():
 
         redirect_uri = "https://local.trailapp.com/robot/callback"
         encoded_uri = urllib.parse.quote_plus(redirect_uri)
-        login_url = "https://discord.com/oauth2/authorize?response_type=code&client_id={}&scope=identify%20guilds%20webhook.incoming&state={}&redirect_uri={}&prompt=consent".format(
+        scope = "identify%20guilds%20webhook.incoming"
+        scope = "identify%20guilds"
+        login_url = "https://discord.com/oauth2/authorize?response_type=code&client_id={}&scope={}&state={}&redirect_uri={}&prompt=consent".format(
             self.discord_client_id,
+            scope,
             session_id,
             encoded_uri
         )
