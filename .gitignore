@@ -7,3 +7,7 @@ webhooks.json
 *.pub
 login.sh
 mnt
+node_modules
+dist
+dist-ssr
+*.local

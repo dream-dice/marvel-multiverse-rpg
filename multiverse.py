@@ -47,7 +47,7 @@ def exchange_code(client_id, client_secret, code):
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': "https://local.trailapp.com/robot/callback"
+        'redirect_uri': "https://local.blankstring.com/callback"
     }
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -108,7 +108,7 @@ class Multiverse():
         bacon = cherrypy.session.get("bacon")
         cherrypy.session["bacon"] = "soup"
 
-        return {"hello": bacon}
+        return {"hello": bacon, "id": cherrypy.session.id}
 
     @cherrypy.expose
     def get(self):
@@ -149,7 +149,7 @@ class Multiverse():
         channels = []
         for guild in guilds:
             if "luke" in guild["name"].lower():
-                channels = get_channels(access_token, guild["id"])
+                channels = get_channels(guild["id"])
                 print(channels)
 
         return "Hello, world! {} {} {} {} {} {}".format(state, code, res, user, guilds, channels)
@@ -157,8 +157,11 @@ class Multiverse():
     @cherrypy.expose
     def index(self):
         session_id = cherrypy.session.id
+        user_id = cherrypy.session.get("user_id")
+        if user_id:
+            raise cherrypy.HTTPRedirect('/web')
 
-        redirect_uri = "https://local.trailapp.com/robot/callback"
+        redirect_uri = "https://local.blankstring.com/callback"
         encoded_uri = urllib.parse.quote_plus(redirect_uri)
         scope = "identify%20guilds%20webhook.incoming"
         scope = "identify%20guilds"

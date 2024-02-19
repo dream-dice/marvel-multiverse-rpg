@@ -162,7 +162,7 @@ def help(cap: captain_dice.CaptainDice, hero, hero_name, command, params):
         if key in commands:
             return DESCRIPTIONS.get(key)
     if len(params) == 0:
-        return "Captain Dice here, I can help with `d616|d|pool|p|trouble|t|edge|e|set|s|join|j` commands."
+        return "Captain Dice here, {} I can help with `d616|d|pool|p|trouble|t|edge|e|set|s|join|j` commands.".format(hero_name)
     return "Captain Dice here, I do not know how to help with `{}`. I can help with `help d616|d|pool|p|trouble|t|edge|e|set|s|join|j` commands.".format(command)
 
 

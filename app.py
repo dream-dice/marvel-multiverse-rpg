@@ -39,7 +39,7 @@ async def on_message(message):
         return
 
     hero_server = message.guild.name
-    hero_name = message.author.name
+    hero_name = message.author.id
     hero = str(
         bcrypt.hashpw('{}.{}'.format(
             hero_server, hero_name).encode(), salt
@@ -68,7 +68,7 @@ def start_cherrypy(client):
             discord_client_id,
             discord_client_secret
         ),
-        base_route
+        "/"
     )
     cherrypy.engine.start()
 

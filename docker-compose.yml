@@ -1,20 +1,29 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: python:3.11-slim
+    working_dir: /app
     ports:
       - 8099:8099
     volumes:
       - .:/app
-      - ./mnt/sessions:/app/sessions
-    command: python app.py
+    command: sh -c "pip install -r requirements.txt && python app.py"
     environment:
         - CASSANDRA_CLUSTER_NAME=Muliverse
         - CASSANDRA_USER=cassandra
         - CASSANDRA_PASSWORD=cassandra
     depends_on:
       - cassandra
+      - web
+  web:
+    image: node:20.11.0
+    working_dir: /web
+    ports:
+      - 5173:5173
+    volumes:
+      - ./web:/web
+      - /web/node_modules
+      - /web/dist
+    command: sh -c "npm i && npm start"
   cassandra:
       image: cassandra:3.11.2
       container_name: cassandra
