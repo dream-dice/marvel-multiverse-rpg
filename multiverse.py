@@ -4,7 +4,6 @@ import requests
 import urllib.parse
 
 from dotenv import load_dotenv
-from discord import SyncWebhook
 import cherrypy
 
 from marvel import Marvel
@@ -33,6 +32,16 @@ def get_guilds(bearer, access_token):
     return r.json()
 
 
+def message(channel_id, message):
+    headers = {
+        'Authorization': 'Bot %s' % token
+    }
+    r = requests.post('%s/channels/%s/messages' %
+                      (API_ENDPOINT, channel_id), headers=headers, data={"content": message})
+    r.raise_for_status()
+    return r.json()
+
+
 def get_bot_role_id(client_id, guild_id):
     headers = {
         'Authorization': 'Bot %s' % token
@@ -56,10 +65,12 @@ def get_channels(guild_id):
     r.raise_for_status()
     return r.json()
 
+
 def get_bot_channels(client_id, guild_id):
     bot_role_id = get_bot_role_id(client_id, guild_id)
     channels = get_channels(guild_id)
-    filtered_channels = [channel for channel in channels if channel.get("parent_id") is not None and channel.get("bitrate") is None]
+    filtered_channels = [channel for channel in channels if channel.get(
+        "parent_id") is not None and channel.get("bitrate") is None]
     channels_with_bot_access = [channel for channel in filtered_channels if any(
         overwrite['id'] == bot_role_id and overwrite['allow'] != '0' for overwrite in channel['permission_overwrites'])]
     if len(channels_with_bot_access) == 0:
@@ -108,23 +119,11 @@ def revoke_access_token(access_token, client_id, client_secret):
                   headers=headers, auth=(client_id, client_secret))
 
 
-async def send_message(client, channel_id, message):
-    channel = client.get_channel(int(channel_id))
-    await channel.send(message)
-
-
 class Multiverse():
-    def __init__(self, client, discord_client_id, discord_client_secret):
-        self.client = client
+    def __init__(self, discord_client_id, discord_client_secret):
         self.discord_client_id = discord_client_id
         self.discord_client_secret = discord_client_secret
         self.mdb = Marvel()
-
-    def message(self, channel_id):
-        asyncio.run_coroutine_threadsafe(
-            send_message(self.client, channel_id, 'Hello'),
-            self.client.loop
-        )
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -159,7 +158,6 @@ class Multiverse():
     @cherrypy.tools.json_out()
     def get(self):
         user_id = cherrypy.session.get("user_id")
-        print("user_id", user_id)
         if not user_id:
             cherrypy.response.status = 401
             return {"error": "Not authorized."}
@@ -172,8 +170,8 @@ class Multiverse():
                         in [bot_guild["id"] for bot_guild in bot_guilds]]
         guilds_info = [{"name": guild["name"], "id": guild["id"]}
                        for guild in intersection]
-    
-        first_guild_id = guilds_info[0]["id"]
+
+        first_guild_id = guilds_info[2]["id"]
         channels = get_bot_channels(self.discord_client_id, first_guild_id)
         channels_info = [{"name": channel["name"], "id": channel["id"]}
                          for channel in channels]
@@ -219,14 +217,12 @@ class Multiverse():
             self.discord_client_id,
             self.discord_client_secret
         )
-        print("revoked", res)
 
         res = refresh_token(
             user.refresh_token,
             self.discord_client_id,
             self.discord_client_secret
         )
-        print("refreshed", res)
 
         access_token = res["access_token"]
         expires_in = res["expires_in"]
@@ -246,17 +242,3 @@ class Multiverse():
             raise cherrypy.HTTPRedirect('/web')
         else:
             raise cherrypy.HTTPRedirect('/web/login')
-
-#         redirect_uri = "https://local.blankstring.com/callback"
-#         encoded_uri = urllib.parse.quote_plus(redirect_uri)
-#         scope = "identify%20guilds%20webhook.incoming"
-#         scope = "identify%20guilds"
-#         login_url = "https://discord.com/oauth2/authorize?response_type=code&client_id={}&scope={}&state={}&redirect_uri={}&prompt=consent".format(
-#             self.discord_client_id,
-#             scope,
-#             session_id,
-#             encoded_uri
-#         )
-#         return """
-# <a href="{}">login</a>
-# """.format(login_url)
