@@ -14,6 +14,18 @@ services:
     depends_on:
       - cassandra
       - web
+  bot:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pip install -r requirements.txt && python bot.py"
+    environment:
+        - CASSANDRA_CLUSTER_NAME=Muliverse
+        - CASSANDRA_USER=cassandra
+        - CASSANDRA_PASSWORD=cassandra
+    depends_on:
+      - cassandra
   web:
     image: node:20.11.0
     working_dir: /web
