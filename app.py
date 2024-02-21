@@ -18,7 +18,9 @@ load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 client = discord.Client(intents=intents)
+
 power = powers.Power()
 token = os.environ['TOKEN']
 salt = bytes(os.environ['SALT'], 'utf8')

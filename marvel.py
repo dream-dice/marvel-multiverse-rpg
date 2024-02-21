@@ -33,6 +33,34 @@ class Marvel():
     def session(self):
         return self.cluster.connect()
 
+    def update_user(self, id, username, access_token, refresh_token, expires_in):
+        session = self.cluster.connect()
+        try:
+            now = datetime.datetime.now()
+            expires = now + datetime.timedelta(seconds=expires_in)
+            unix_timestamp = int(time.mktime(expires.timetuple()) * 1000)
+
+            query = """UPDATE marvel.users
+            SET
+                username = '{}',
+                access_token = '{}',
+                refresh_token = '{}',
+                expires = '{}'
+            WHERE
+                id = '{}';
+            """.format(
+                username,
+                access_token,
+                refresh_token,
+                unix_timestamp,
+                id
+            )
+            return session.execute(query)
+        except Exception as e:
+            print(e)
+        finally:
+            session.shutdown()
+
     def add_user(self, id, username, access_token, refresh_token, expires_in):
         session = self.cluster.connect()
         try:
@@ -136,7 +164,6 @@ class Marvel():
     def set_cherry_session(self, id, data, expiration_time, timestamp):
         session = self.cluster.connect()
         data_text = json.dumps(data)
-        print("THE ID", id)
         try:
             insert_query = "INSERT INTO marvel.cherry_session (id, data, expiration_timestamp, timestamp) VALUES ('{}', '{}', '{}', '{}') IF NOT EXISTS;".format(
                 id,
@@ -153,12 +180,10 @@ class Marvel():
             session.shutdown()
 
     def get_cherry_session(self, id):
-        print("THE ID", id)
         session = self.cluster.connect()
         try:
             query = "SELECT * FROM marvel.cherry_session WHERE id = '{}';".format(id)
             result_set = session.execute(query).one()
-            print("GET", result_set.data, result_set.expiration_timestamp, result_set.timestamp)
             return (json.loads(result_set.data), datetime.datetime.strptime(result_set.expiration_timestamp, '%Y-%m-%d %H:%M:%S.%f'))
         except Exception as e:
             print(e)
