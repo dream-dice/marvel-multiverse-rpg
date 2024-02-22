@@ -174,7 +174,7 @@ class Multiverse():
         guilds_info = [{"name": guild["name"], "id": guild["id"]}
                        for guild in intersection]
 
-        first_guild_id = guilds_info[2]["id"]
+        first_guild_id = guilds_info[0]["id"]
         channels = get_bot_channels(self.discord_client_id, first_guild_id)
         channels_info = [{"name": channel["name"], "id": channel["id"]}
                          for channel in channels]
