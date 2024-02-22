@@ -7,12 +7,7 @@ services:
     volumes:
       - .:/app
     command: sh -c "pip install -r requirements.txt && python app.py"
-    environment:
-        - CASSANDRA_CLUSTER_NAME=Muliverse
-        - CASSANDRA_USER=cassandra
-        - CASSANDRA_PASSWORD=cassandra
     depends_on:
-      - cassandra
       - web
   bot:
     image: python:3.11-slim
@@ -20,12 +15,6 @@ services:
     volumes:
       - .:/app
     command: sh -c "pip install -r requirements.txt && python bot.py"
-    environment:
-        - CASSANDRA_CLUSTER_NAME=Muliverse
-        - CASSANDRA_USER=cassandra
-        - CASSANDRA_PASSWORD=cassandra
-    depends_on:
-      - cassandra
   web:
     image: node:20.11.0
     working_dir: /web
@@ -36,14 +25,4 @@ services:
       - /web/node_modules
       - /web/dist
     command: sh -c "npm i && npm start"
-  cassandra:
-      image: cassandra:3.11.2
-      container_name: cassandra
-      ports:
-        - 9042:9042
-      volumes:
-        - ./mnt/cassandra:/var/lib/cassandra
-      environment:
-        - CASSANDRA_CLUSTER_NAME=Muliverse
-        - CASSANDRA_USER=cassandra
-        - CASSANDRA_PASSWORD=cassandra
+  

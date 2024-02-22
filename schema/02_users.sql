@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS marvel.users (
+CREATE TABLE IF NOT EXISTS users (
     id text,
     username text,
     access_token text,

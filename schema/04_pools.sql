@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS marvel.pools (
+CREATE TABLE IF NOT EXISTS pools (
     hero_id text,
     d1 text,
     d2 text,

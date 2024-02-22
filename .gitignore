@@ -1,13 +1,15 @@
 __pycache__
 .env
-heros.json
-webhooks.json
 .vscode
 *.key
 *.pub
 login.sh
-mnt
 node_modules
 dist
 dist-ssr
 *.local
+
+# generated files
+sessions/*
+heros.json
+marvel.db

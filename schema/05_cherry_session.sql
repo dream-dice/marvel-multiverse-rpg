@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS marvel.cherry_session (
+CREATE TABLE IF NOT EXISTS cherry_session (
     id text,
     data text,
     expiration_timestamp timestamp,

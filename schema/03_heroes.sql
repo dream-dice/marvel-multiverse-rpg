@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS marvel.heroes (
+CREATE TABLE IF NOT EXISTS heroes (
     username text,
     name text,
     id uuid,

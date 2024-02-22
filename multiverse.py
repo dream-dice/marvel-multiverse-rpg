@@ -162,7 +162,7 @@ class Multiverse():
             cherrypy.response.status = 401
             return {"error": "Not authorized."}
         user = self.mdb.get_user(user_id)
-        guilds = get_guilds('Bearer', user.access_token)
+        guilds = get_guilds('Bearer', user["access_token"])
 
         bot_guilds = get_guilds('Bot', token)
 
@@ -176,7 +176,7 @@ class Multiverse():
         channels_info = [{"name": channel["name"], "id": channel["id"]}
                          for channel in channels]
 
-        return {"username": user.username, "guilds": guilds_info, "channels": channels_info}
+        return {"username": user["username"], "guilds": guilds_info, "channels": channels_info}
 
     @cherrypy.expose
     def callback(self, state, code):
@@ -190,11 +190,14 @@ class Multiverse():
         expires_in = res["expires_in"]
         refresh_token = res["refresh_token"]
         user = get_user(res["access_token"])
+        print("hello 2", user)
+
         id = user["id"]
         username = user["username"]
 
         cherrypy.session["user_id"] = id
         user = self.mdb.get_user(id)
+
 
         if user == None:
             self.mdb.add_user(id, username, access_token,
@@ -204,6 +207,16 @@ class Multiverse():
                                  refresh_token, expires_in)
 
         raise cherrypy.HTTPRedirect('/web')
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def db(self):
+        session_id = cherrypy.session.id
+        test_value = cherrypy.session.get("test")
+        cherrypy.session["test"] = "test"
+        return {"session_id": session_id, "test": test_value}
+        
+        
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
