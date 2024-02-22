@@ -17,6 +17,8 @@ class Marvel():
                     with open(os.path.join(schema_folder, filename)) as f:
                         cursor.execute(f.read())
             connection.commit()
+        except Exception as e:
+            print('run_schema', e)
         finally:
             connection.close()
 
@@ -96,69 +98,5 @@ class Marvel():
             return cursor_hash[0]
         except Exception as e:
             print('get_user', e)
-        finally:
-            connection.close()
-
-    def set_cherry_session(self, id, data, expiration_time, timestamp):
-        print('set_cherry_session', id, data, expiration_time, timestamp)
-        connection = sqlite3.connect('marvel.db')
-        data_text = json.dumps(data)
-        print(data_text)
-        try:
-            cursor = connection.cursor()
-            insert_query = "INSERT INTO cherry_session (id, data, expiration_timestamp, timestamp) VALUES ('{}', '{}', '{}', '{}')".format(
-                id,
-                data_text,
-                expiration_time,
-                timestamp
-            )
-            print(insert_query)
-            try:
-                cursor.execute(insert_query)
-                connection.commit()
-            except Exception as e:
-                print('set_cherry_session:insert', e)
-                update_query = "UPDATE cherry_session SET data = '{}' WHERE id = '{}'".format(data_text, id)
-                print(update_query)
-                cursor.execute(update_query)
-        except Exception as e:
-            print('set_cherry_session', e)
-        finally:
-            connection.close()
-
-    def get_cherry_session(self, id):
-        connection = sqlite3.connect('marvel.db')
-        try:
-            query = "SELECT * FROM cherry_session WHERE id = '{}';".format(id)
-
-            print(1)
-            cursor = connection.execute(query)
-            print(2)
-            columns = [column[0] for column in cursor.description]
-            print(3)
-            results = cursor.fetchall()
-            print(4, results)
-            cursor_hash = [dict(zip(columns, row)) for row in results]
-            print(5, cursor_hash[0]["data"], cursor_hash[0]["expiration_timestamp"])
-
-            if cursor_hash:
-                return (json.loads(cursor_hash[0]["data"]), datetime.datetime.strptime(cursor_hash[0]["expiration_timestamp"], '%Y-%m-%d %H:%M:%S.%f'))
-            else:
-                return None
-        except Exception as e:
-            print('get_cherry_session', e)
-        finally:
-            connection.close()
-
-    def delete_cherry_session(self, id):
-        connection = sqlite3.connect('marvel.db')
-        try:
-            query = "DELETE FROM cherry_session WHERE id = '{}';".format(
-                id)
-            cursor = connection.cursor()
-            cursor.execute(query)
-            connection.commit()
-        except Exception as e:
-            print('delete_cherry_session', e)
         finally:
             connection.close()

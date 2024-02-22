@@ -162,7 +162,9 @@ class Multiverse():
         if not user_id:
             cherrypy.response.status = 401
             return {"error": "Not authorized."}
+        print("hello", user_id)
         user = self.mdb.get_user(user_id)
+        print("hello", user)
         guilds = get_guilds('Bearer', user["access_token"])
 
         bot_guilds = get_guilds('Bot', token)

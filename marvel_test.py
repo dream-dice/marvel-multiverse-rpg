@@ -2,7 +2,7 @@ import marvel
 
 mdb = marvel.Marvel()
 
-# mdb.run_schema()
+mdb.run_schema()
 
 
 id = 82764823764237846
