@@ -9,12 +9,14 @@ services:
     command: sh -c "pip install -r requirements.txt && python app.py"
     depends_on:
       - web
+    user: "${UID}:${GID}"
   bot:
     image: python:3.11-slim
     working_dir: /app
     volumes:
       - .:/app
     command: sh -c "pip install -r requirements.txt && python bot.py"
+    user: "${UID}:${GID}"
   web:
     image: node:20.11.0
     working_dir: /web
@@ -25,4 +27,5 @@ services:
       - /web/node_modules
       - /web/dist
     command: sh -c "npm i && npm start"
+    user: "${UID}:${GID}"
   
