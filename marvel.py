@@ -13,7 +13,7 @@ class Marvel():
             schema_folder = './schema'
             for filename in sorted(os.listdir(schema_folder)):
                 print("Ran {}".format(filename))
-                if filename.endswith('.cql'):
+                if filename.endswith('.sql'):
                     with open(os.path.join(schema_folder, filename)) as f:
                         cursor.execute(f.read())
             connection.commit()
