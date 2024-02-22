@@ -12,6 +12,7 @@ API_ENDPOINT = 'https://discord.com/api/v10'
 
 load_dotenv()
 token = os.environ['TOKEN']
+callback_url = os.environ['DISCORD_CALLBACK']
 
 
 def get_user(access_token):
@@ -82,7 +83,7 @@ def exchange_code(client_id, client_secret, code):
     data = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': "https://local.blankstring.com/callback"
+        'redirect_uri': callback_url
     }
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -129,7 +130,7 @@ class Multiverse():
     @cherrypy.tools.json_out()
     def login_url(self):
         session_id = cherrypy.session.id
-        redirect_uri = "https://local.blankstring.com/callback"
+        redirect_uri = callback_url
         encoded_uri = urllib.parse.quote_plus(redirect_uri)
         scope = "identify%20guilds%20webhook.incoming"
         scope = "identify%20guilds"
